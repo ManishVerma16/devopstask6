@@ -29,7 +29,7 @@ then
         kubectl create -f /gitclone/web-deploy.yml;
         web=$(kubectl get pod -o jsonpath="{.items[0].metadata.name}");
         sleep 15;
-        kubectl cp gitclone/linux.html $web:/var/www/html/;
+        kubectl cp /gitclone/linux.html $web:/var/www/html/;
         kubectl get all;
     else
         kubectl create -f /gitclone/web-deploy.yml;
@@ -43,7 +43,7 @@ then
     	kubectl create -f /gitclone/php-deploy.yml;
    		php=$(kubectl get pod -o jsonpath="{.items[0].metadata.name}");
         sleep 15;
-        kubectl cp gitclone/index.php $php:/var/www/html/; 
+        kubectl cp /gitclone/index.php $php:/var/www/html/; 
         kubectl get all;       
         else
             kubectl create -f /gitclone/php-deploy.yml;
