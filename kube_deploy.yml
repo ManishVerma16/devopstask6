@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: kube-service
+  labels:
+    app: kube
+    
+spec:
+  selector:
+    app: kube
+    dc: IN
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 32000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-deploy
+  labels:
+    app: kube
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: kube
+      dc: IN
+  template:
+    metadata:
+      name: kube-pod
+      labels:
+        app: kube
+        dc: IN
+    spec:
+      containers:
+      - name: kube-con
+        image: manishverma16/jenkins_k8s:v3

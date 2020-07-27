@@ -1,0 +1,79 @@
+Job2_PodLaunch
+
+if ls -l /gitrepo | grep ".html"
+then
+	if kubectl get deploy | grep web
+    then
+    	kubectl delete all --all
+        kubectl create -f /yml/web-deploy.yml
+        web=$(kubectl get pod -o jsonpath="{.items[0].metadata.name}")
+        sleep 15
+        kubectl cp gitrepo/linux.html $web:/var/www/html/
+    else
+        kubectl create -f /yml/web-deploy.yml
+    fi
+elif ls -l /gitrepo | grep ".php"
+then
+    if kubectl get deploy | grep php
+    then
+    	kubectl delete all --all
+        kubectl create -f /yml/php-deploy.yml
+        php=$(kubectl get pod -o jsonpath="{.items[0].metadata.name}")
+        sleep 15
+        kubectl cp gitrepo/index.php $php:/var/www/html/
+    else
+        kubectl create -f /yml/php-deploy.yml
+    fi
+else
+	echo "no file found!!!!"
+fi
+
+
+Job3_PodTest
+
+if kubectl get deploy | grep web
+then
+	echo "Webserver running well!!!"
+elif kubectl get deploy | grep php
+then
+	echo "PHP running well!!!"
+else
+	echo "Pods not working!!!"
+fi
+
+
+Job4_AppTest
+
+if kubectl get deploy | grep web
+then
+	status=$(curl -s 192.168.99.100:30301/linux.html -w '%{http_code}' -o /dev/null)
+	if [ $status -eq 200 ]
+    then
+    	echo "Webserver running fine"
+    else
+    	echo "Webserver not running fine"
+    fi
+elif kubectl get deploy | grep php
+then
+	status=$(curl -s 192.168.99.100:30302/index.php -w '%{http_code}' -o /dev/null)
+	if [ $status -eq 200 ]
+    then
+    	echo "PHP server running fine"
+    else
+    	echo "PHP not running fine"
+    fi
+else
+	echo "Pods not running"
+fi
+
+Job5_PodRelaunch
+
+if kubectl get deploy | grep web
+then
+	exit 0
+elif kubectl get deploy | grep php
+then
+	exit 0
+else
+	echo "Pods not working!!!"
+fi
