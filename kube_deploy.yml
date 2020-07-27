@@ -39,4 +39,4 @@ spec:
     spec:
       containers:
       - name: kube-con
-        image: manishverma16/jenkins_k8s:v3
+        image: manishverma16/jenkins_k8s:v4
